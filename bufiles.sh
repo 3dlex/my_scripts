@@ -1,38 +1,43 @@
 #!/bin/bash
+# Incremental Backup script to be run daily.
 
+#Setup and variables 
 #Create required files and directories
-touch files2bu
-#touch bu_archive/incremental_backup-log-$(date +%Y%m%d).txt
-mkdir bu
+#Change destination to a location avaiable to you.
+DESTINATION="/mnt/matthew"
+FILES2BU="/tmp/files2bu"
+touch ${FILES2BU}
+#Verify FILES2BU was created and exit if not
 
-#Find files created in the past 24 hours
-#find Calibre\ Library/ -ctime 0 -type f >> files2bu
-find Documents/ -ctime 0 -type f >> files2bu
-find Downloads/ -ctime 0 -type f >> files2bu
-find Music/ -ctime 0 -type f >> files2bu
-find Pictures/ -ctime 0 -type f >> files2bu
-find Templates/ -ctime 0 -type f >> files2bu
-find Videos/ -ctime 0 -type f >> files2bu
-find myapp/ -ctime 0 -type f >> files2bu
+if [[ ! -f "${FILES2BU}" ]]; then
+    echo "Exit as file not created."
+    exit 1
+fi
 
-#Copy files to backup folder
-for i in `cat files2bu`
+#Track how many files will be backed up.
+FILECOUNT=0
+
+#Find files created in the past 24 hours but avoid "dot" files.
+#The -path option runs checks a pattern against the entire path string. * is a wildcard, 
+# / is a directory separator, \. is a dot (it has to be escaped to avoid special meaning), 
+# and * is another wildcard. -not means don't select files that match this test.
+find ~/ -not -path '*/\.*' -ctime 0 -type f > ${FILES2BU}
+
+#Dispaly files to user or send to a log with total number.
+for i in $(cat ${FILES2BU})
 do
-echo backing up $i
-cp $i bu/
+    echo backing up ${i}
+    FILECOUNT=$((FILECOUNT + 1))
 done
-echo "Finished gathering files for backup."
+
+echo "Finished gathering files for backup. We have ${FILECOUNT} files to backup."
 
 #Create an archive
 echo "############"
 echo "Now to create the archive."
-tar -cvzf incremental_backup-$(date +%Y%m%d).tar.gz bu/
-mv incremental_backup-$(date +%Y%m%d).tar.gz bu_archive/
-cp files2bu bu_archive/incremental_backup-log-$(date +%Y%m%d).txt
+#tar -czf /tmp/incremental_backup-$(date +%Y%m%d).tar.gz -T ${FILES2BU} >/dev/null 2>&1
+tar -czf ${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz -T ${FILES2BU} >/dev/null 2>&1
 echo Incremental backup complete.
-echo Incremental backup is located at /home/matthew/bu_archive/incremental_backup-$(date +%Y%m%d).tar.gz.
-cp /home/matthew/bu_archive/incremental_backup-$(date +%Y%m%d).tar.gz /home/matthew/ownCloud/basement_desktop/
-cp /home/matthew/bu_archive/incremental_backup-log-$(date +%Y%m%d).txt /home/matthew/ownCloud/basement_desktop/
-#Clean up leftove files and folders the archive created
-rm files2bu
-rm -rf bu/
+echo Incremental backup is located at /tmp/incremental_backup-$(date +%Y%m%d).tar.gz.
+#Clean up leftover files and folders the script created
+rm ${FILES2BU}
