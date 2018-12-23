@@ -1,12 +1,16 @@
 #!/bin/bash
-# Incremental Backup script to be run daily.
-
+# 
+#Description: Incremental backup script to be run daily.
+#
+#Author: Matthew Davidson
+#Date: 12-23-2018
 #Setup and variables 
-#Create required files and directories
+VERSION="1.0"
+SCRIPTNAME=$(basename "$0")
+SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=$(date +%Y-%m-%d)
-#Track how many files will be backed up.
-FILECOUNT=0
 
+#Create required files and directories
 #Log steps for troubleshooting.
 LOGFILE="/tmp/backup-$(date +%Y%m%d)"
 
@@ -20,9 +24,14 @@ if [[ ! -f "${FILES2BU}" ]]; then
     exit 1
 fi
 
+#Count how many files will be backed up.
+FILECOUNT=0
+
+#Script starts
 echo "Today is: ${DATE}" | tee -a ${LOGFILE}
+
 #Find files created in the past 24 hours but avoid "dot" files.
-#The -path option runs checks a pattern against the entire path string. * is a wildcard, 
+#The -path option checks a pattern against the entire path string. * is a wildcard, 
 # / is a directory separator, \. is a dot (it has to be escaped to avoid special meaning), 
 # and * is another wildcard. -not means don't select files that match this test.
 find ~/ -not -path '*/\.*' -ctime 0 -type f > ${FILES2BU}
