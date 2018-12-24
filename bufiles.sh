@@ -12,7 +12,6 @@ SCRIPTNAME=$(basename "$0")
 SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=$(date +%Y-%m-%d)
 
-#Create required files and directories
 #Log steps for troubleshooting.
 # Need to migrate to proper log location.
 LOGFILE="/tmp/backup-$(date +%Y%m%d)"
@@ -48,8 +47,7 @@ find_files(){
 
 #Dispaly files to user or send to a log with total number.
 process_files(){
-    for i in $(cat ${FILES2BU})
-    do
+    for i in $(cat ${FILES2BU}); do
         echo backing up ${i} | tee -a ${LOGFILE}
         FILECOUNT=$((FILECOUNT + 1))
     done
@@ -69,6 +67,7 @@ create_archive(){
     fi
 }
     
+#Clean up left over temp files.
 clean_up(){
     #Clean up leftover files and folders the script created
     rm ${FILES2BU}
