@@ -4,6 +4,7 @@
 #
 #Author: Matthew Davidson
 #Date: 12-23-2018
+#
 #Setup and variables 
 VERSION="1.0"
 SCRIPTNAME=$(basename "$0")
@@ -20,11 +21,11 @@ FILES2BU="/tmp/files2bu"
 touch ${FILES2BU}
 #Verify FILES2BU was created and exit if not
 if [[ ! -f "${FILES2BU}" ]]; then
-    echo "Exit as file not created." | tee -a ${LOGFILE}
+    echo "FILES2BU was not created. Exiting now." | tee -a ${LOGFILE}
     exit 1
 fi
 
-#Count how many files will be backed up.
+#Variable used to count number of files backed up. Useful when script is run manually. 
 FILECOUNT=0
 
 #Script starts
