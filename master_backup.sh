@@ -24,7 +24,7 @@ USERBU="/home/matthew"
 #Change destination to a location avaiable to you.
 DESTINATION="/mnt/matthew"
 
-#File list
+#File list used by incremental backups
 FILES2BU="/tmp/files2bu"
 touch "${FILES2BU}"
 #Verify FILES2BU was created and exit if not
@@ -38,7 +38,8 @@ FILECOUNT=0
 
 ##########################################################
 #Functions
-
+#Determine day of the week. Monday - Saturday are incremental and
+# Sunday are full backups.
 fullorincremental(){
     if [[ $(date +%u) != 7 ]]; then
         echo "We will run an incremental."
@@ -49,19 +50,15 @@ fullorincremental(){
     fi
 }
 
-#Incremental:
+#Incremental : process_files function
 #Find files created in the past 24 hours but avoid "dot" files.
 #The -path option checks a pattern against the entire path string. * is a wildcard,
 # / is a directory separator, \. is a dot (it has to be escaped to avoid special meaning),
 # and * is another wildcard. -not means don't select files that match this test.
-find_files(){
-    if [[ ${BACKUP} == "incremental" ]]; then
-        find "${USERBU}" -not -path '*/\.*' -ctime 0 -type f > "${FILES2BU}"
-    fi
-}
 
 process_files(){
     if [[ ${BACKUP} == "incremental" ]]; then
+        find "${USERBU}" -not -path '*/\.*' -ctime 0 -type f > "${FILES2BU}"
         for i in $(cat ${FILES2BU}); do
             echo backing up ${i} | tee -a ${LOGFILE}
             FILECOUNT=$((FILECOUNT + 1))
@@ -70,7 +67,7 @@ process_files(){
     fi
 }
 
-#Create an archive
+#Create an archive either incremental or full.
 create_archive(){
     if [[ ${BACKUP} == "incremental" ]]; then
         echo "############" | tee -a ${LOGFILE}
@@ -105,6 +102,5 @@ clean_up(){
 #Script starts
 echo "Today is: ${DATE}" | tee -a ${LOGFILE}
 fullorincremental
-find_files
 process_files
 create_archive
