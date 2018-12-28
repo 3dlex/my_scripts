@@ -7,6 +7,7 @@
 #Author: Matthew Davidson
 #Date: 12-27-2018
 #
+
 ##########################################################
 #Global Setup and variables 
 VERSION="1.0"
@@ -22,7 +23,7 @@ LOGFILE="/tmp/backup-$(date +%Y%m%d)"
 USERBU="/home/matthew"
 
 #Change destination to a location avaiable to you.
-DESTINATION="/mnt/matthew"
+DESTINATION="/mnt/matthew/backup"
 
 #File list used by incremental backups
 FILES2BU="/tmp/files2bu"
@@ -38,6 +39,20 @@ FILECOUNT=0
 
 ##########################################################
 #Functions
+
+#Script starts
+scriptstart(){
+    echo "############" | tee -a ${LOGFILE}
+    echo "Starting new backup" | tee -a ${LOGFILE}
+    echo "Today is: ${DATE}" | tee -a ${LOGFILE}
+}
+
+#Due to disk space constraints we need to purge older backups
+# A full backup is moved to a safe location offsite once a month.
+purgeoldbackup(){
+    find ${DESTINATION} -mtime +14 -type f -delete
+}
+
 #Determine day of the week. Monday - Saturday are incremental and
 # Sunday are full backups.
 fullorincremental(){
@@ -55,7 +70,6 @@ fullorincremental(){
 #The -path option checks a pattern against the entire path string. * is a wildcard,
 # / is a directory separator, \. is a dot (it has to be escaped to avoid special meaning),
 # and * is another wildcard. -not means don't select files that match this test.
-
 process_files(){
     if [[ ${BACKUP} == "incremental" ]]; then
         find "${USERBU}" -not -path '*/\.*' -ctime 0 -type f > "${FILES2BU}"
@@ -74,8 +88,9 @@ create_archive(){
         echo "Now to create the incremental backup." | tee -a ${LOGFILE}
         tar -czf ${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz -T ${FILES2BU} >/dev/null 2>&1
         if [[ -f "${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz" ]]; then
-            echo Incremental backup complete. | tee -a ${LOGFILE}
-            echo Incremental backup is located at ${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz. | tee -a ${LOGFILE}
+            echo "Incremental backup complete." | tee -a ${LOGFILE}
+            echo "Incremental backup is located at:" | tee -a ${LOGFILE} 
+            echo "${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz" | tee -a ${LOGFILE}
         else
             echo "Check backup as file was not found." | tee -a ${LOGFILE}
         fi
@@ -98,9 +113,12 @@ clean_up(){
     rm ${FILES2BU}
 }
 
+
 ##########################################################
-#Script starts
-echo "Today is: ${DATE}" | tee -a ${LOGFILE}
+#Script begins
+scriptstart
+purgeoldbackup
 fullorincremental
 process_files
 create_archive
+clean_up
