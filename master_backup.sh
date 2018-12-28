@@ -1,5 +1,12 @@
 #!/bin/bash
-
+# 
+#Description: Backup script to be run daily.
+# On Sunday a full backup is taken and the rest 
+# of the days are incremental.
+#
+#Author: Matthew Davidson
+#Date: 12-27-2018
+#
 ##########################################################
 #Global Setup and variables 
 VERSION="1.0"
@@ -11,7 +18,7 @@ DATE=$(date +%Y-%m-%d)
 # Need to migrate to proper log location.
 LOGFILE="/tmp/backup-$(date +%Y%m%d)"
 
-#User to backup. change to fit your needs.
+#User to backup. Change to fit your needs.
 USERBU="/home/matthew"
 
 #Change destination to a location avaiable to you.
@@ -66,8 +73,8 @@ process_files(){
 #Create an archive
 create_archive(){
     if [[ ${BACKUP} == "incremental" ]]; then
-        echo "############"
-        echo "Now to create the incremental backup."
+        echo "############" | tee -a ${LOGFILE}
+        echo "Now to create the incremental backup." | tee -a ${LOGFILE}
         tar -czf ${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz -T ${FILES2BU} >/dev/null 2>&1
         if [[ -f "${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz" ]]; then
             echo Incremental backup complete. | tee -a ${LOGFILE}
@@ -76,8 +83,8 @@ create_archive(){
             echo "Check backup as file was not found." | tee -a ${LOGFILE}
         fi
     else
-        echo "############"
-        echo "Now to create the full backup."
+        echo "############" | tee -a ${LOGFILE}
+        echo "Now to create the full backup." | tee -a ${LOGFILE}
         tar -czvf ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz ${USERBU}
         if [[ -f "${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz" ]]; then
             echo full backup complete. | tee -a ${LOGFILE}
