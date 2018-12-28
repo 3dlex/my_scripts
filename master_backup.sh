@@ -50,7 +50,7 @@ fullorincremental(){
     fi
 }
 
-#Incremental:
+#Incremental : process_files function
 #Find files created in the past 24 hours but avoid "dot" files.
 #The -path option checks a pattern against the entire path string. * is a wildcard,
 # / is a directory separator, \. is a dot (it has to be escaped to avoid special meaning),
@@ -67,7 +67,7 @@ process_files(){
     fi
 }
 
-#Create an archive
+#Create an archive either incremental or full.
 create_archive(){
     if [[ ${BACKUP} == "incremental" ]]; then
         echo "############" | tee -a ${LOGFILE}
