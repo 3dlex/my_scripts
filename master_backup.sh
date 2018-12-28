@@ -53,8 +53,8 @@ purgeoldbackup(){
     find ${DESTINATION} -mtime +14 -type f -delete
 }
 
-#Determine day of the week. Monday - Saturday are incremental and
-# Sunday are full backups.
+#Determine day of the week and set variable. Monday - Saturday are 
+# incremental and Sunday are full backups.
 fullorincremental(){
     if [[ $(date +%u) != 7 ]]; then
         echo "We will run an incremental."
