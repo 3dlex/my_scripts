@@ -24,10 +24,10 @@ DESTINATION="/mnt/matthew"
 
 #File list
 FILES2BU="/tmp/files2bu"
-touch ${FILES2BU}
+touch "${FILES2BU}"
 #Verify FILES2BU was created and exit if not
 if [[ ! -f "${FILES2BU}" ]]; then
-    echo "FILES2BU was not created. Exiting now." | tee -a ${LOGFILE}
+    echo "FILES2BU was not created. Exiting now." | tee -a "${LOGFILE}"
     exit 1
 fi
 
@@ -42,7 +42,7 @@ FILECOUNT=0
 # / is a directory separator, \. is a dot (it has to be escaped to avoid special meaning), 
 # and * is another wildcard. -not means don't select files that match this test.
 find_files(){
-    find ${USERBU} -not -path '*/\.*' -ctime 0 -type f > ${FILES2BU}
+    find "${USERBU}" -not -path '*/\.*' -ctime 0 -type f > "${FILES2BU}"
 }
 
 #Dispaly files to user or send to a log with total number.
