@@ -50,17 +50,17 @@ scriptstart(){
 #Due to disk space constraints we need to purge older backups
 # A full backup is moved to a safe location offsite once a month.
 purgeoldbackup(){
-    find ${DESTINATION} -mtime +14 -type f -delete
+    echo "Purge older backups. Log file will also contain the names of deleted files."
+    find ${DESTINATION} -mtime +14 -type f -print -delete | tee -a ${LOGFILE}
+    echo "############" | tee -a ${LOGFILE}
 }
 
 #Determine day of the week and set variable. Monday - Saturday are 
 # incremental and Sunday are full backups.
 fullorincremental(){
     if [[ $(date +%u) != 7 ]]; then
-        echo "We will run an incremental."
         BACKUP="incremental"
     else
-        echo "We will run a full backup."
         BACKUP="full"
     fi
 }
@@ -72,6 +72,7 @@ fullorincremental(){
 # and * is another wildcard. -not means don't select files that match this test.
 process_files(){
     if [[ ${BACKUP} == "incremental" ]]; then
+        echo "Incremental backup chosen. Gathering files."
         find "${USERBU}" -not -path '*/\.*' -ctime 0 -type f > "${FILES2BU}"
         for i in $(cat ${FILES2BU}); do
             echo backing up ${i} | tee -a ${LOGFILE}
