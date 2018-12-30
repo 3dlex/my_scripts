@@ -16,8 +16,8 @@ SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=$(date +%Y-%m-%d)
 
 #Log steps for troubleshooting.
-# Need to migrate to proper log location.
-LOGFILE="/tmp/backup-$(date +%Y%m%d)"
+# Requires logrotate to be setup.
+LOGFILE="/var/log/mybackup"
 
 #User to backup. Change to fit your needs.
 USERBU="/home/matthew"
@@ -30,7 +30,7 @@ FILES2BU="/tmp/files2bu"
 touch "${FILES2BU}"
 #Verify FILES2BU was created and exit if not
 if [[ ! -f "${FILES2BU}" ]]; then
-    echo "FILES2BU was not created. Exiting now." | tee -a "${LOGFILE}"
+    echo "${FILES2BU} was not created. Exiting now." | tee -a "${LOGFILE}"
     exit 1
 fi
 
