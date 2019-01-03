@@ -17,7 +17,7 @@ DATE=$(date +%Y-%m-%d)
 
 #Log steps for troubleshooting.
 # Requires logrotate to be setup.
-LOGFILE="/var/log/mybackup"
+LOGFILE="/var/log/mybackup.log"
 
 #User to backup. Change to fit your needs.
 USERBU="/home/matthew"
@@ -34,7 +34,8 @@ if [[ ! -f "${FILES2BU}" ]]; then
     exit 1
 fi
 
-#Variable used to count number of files backed up. Useful when script is run manually. 
+#Variable used to count number of files backed up. Useful when script is run
+# manually or exiting an incremental if there are no files to backup. 
 FILECOUNT=0
 
 ##########################################################
@@ -79,6 +80,10 @@ process_files(){
             FILECOUNT=$((FILECOUNT + 1))
         done
         echo "Finished gathering files for incremental backup. We have ${FILECOUNT} files to backup." | tee -a ${LOGFILE}
+        if [[ ${FILECOUNT} == "0" ]]; then
+            echo "Since there are no files to backup we will exit script." | tee -a ${LOGFILE}
+            exit 0
+        fi
     fi
 }
 
