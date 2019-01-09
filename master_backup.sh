@@ -105,8 +105,8 @@ create_archive(){
         echo "Now to create the full backup." | tee -a ${LOGFILE}
         tar -czvf ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz ${USERBU}
         if [[ -f "${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz" ]]; then
-            echo full backup complete. | tee -a ${LOGFILE}
-            echo full backup is located at ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz | tee -a ${LOGFILE}
+            echo "Full backup complete." | tee -a ${LOGFILE}
+            echo "Full backup is located at ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz" | tee -a ${LOGFILE}
         else
             echo "Check backup as file was not found." | tee -a ${LOGFILE}
         fi
