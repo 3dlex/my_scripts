@@ -51,8 +51,8 @@ scriptstart(){
 #Due to disk space constraints we need to purge older backups
 # A full backup is moved to a safe location offsite once a month.
 purgeoldbackup(){
-    echo "Purge older backups. Log file will also contain the names of deleted files."
-    find ${DESTINATION} -mtime +14 -type f -print -delete | tee -a ${LOGFILE}
+    echo "Purge older backups. Log file will also contain the names of deleted files." | tee -a ${LOGFILE}
+    find ${DESTINATION} -mtime +21 -type f -print -delete | tee -a ${LOGFILE}
     echo "############" | tee -a ${LOGFILE}
 }
 
@@ -76,7 +76,7 @@ process_files(){
         echo "Incremental backup chosen. Gathering files."
         find "${USERBU}" -not -path '*/\.*' -ctime 0 -type f > "${FILES2BU}"
         for i in $(cat ${FILES2BU}); do
-            echo backing up ${i} | tee -a ${LOGFILE}
+            echo Backing up ${i} | tee -a ${LOGFILE}
             FILECOUNT=$((FILECOUNT + 1))
         done
         echo "Finished gathering files for incremental backup. We have ${FILECOUNT} files to backup." | tee -a ${LOGFILE}
