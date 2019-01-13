@@ -41,19 +41,23 @@ FILECOUNT=0
 ##########################################################
 #Functions
 
+logit(){
+    echo "$(date) ${1}" | tee -a ${LOGFILE}
+}
+
 #Script starts
 scriptstart(){
-    echo "############" | tee -a ${LOGFILE}
-    echo "Starting new backup" | tee -a ${LOGFILE}
-    echo "Today is: ${DATE}" | tee -a ${LOGFILE}
+    logit "############"
+    logit "Starting new backup"
+    logit "Today is: ${DATE}"
 }
 
 #Due to disk space constraints we need to purge older backups
 # A full backup is moved to a safe location offsite once a month.
 purgeoldbackup(){
-    echo "Purge older backups. Log file will also contain the names of deleted files." | tee -a ${LOGFILE}
+    logit "Purge older backups. Log file will also contain the names of deleted files."
     find ${DESTINATION} -mtime +21 -type f -print -delete | tee -a ${LOGFILE}
-    echo "############" | tee -a ${LOGFILE}
+    logit "############"
 }
 
 #Determine day of the week and set variable. Monday - Saturday are 
@@ -73,15 +77,15 @@ fullorincremental(){
 # and * is another wildcard. -not means don't select files that match this test.
 process_files(){
     if [[ ${BACKUP} == "incremental" ]]; then
-        echo "Incremental backup chosen. Gathering files."
+        logit "Incremental backup chosen. Gathering files."
         find "${USERBU}" -not -path '*/\.*' -ctime 0 -type f > "${FILES2BU}"
         for i in $(cat ${FILES2BU}); do
-            echo Backing up ${i} | tee -a ${LOGFILE}
+            logit "Backing up ${i}"
             FILECOUNT=$((FILECOUNT + 1))
         done
-        echo "Finished gathering files for incremental backup. We have ${FILECOUNT} files to backup." | tee -a ${LOGFILE}
+        logit "Finished gathering files for incremental backup. We have ${FILECOUNT} files to backup."
         if [[ ${FILECOUNT} == "0" ]]; then
-            echo "Since there are no files to backup we will exit script." | tee -a ${LOGFILE}
+            logit "Since there are no files to backup we will exit script."
             exit 0
         fi
     fi
@@ -90,25 +94,25 @@ process_files(){
 #Create an archive either incremental or full.
 create_archive(){
     if [[ ${BACKUP} == "incremental" ]]; then
-        echo "############" | tee -a ${LOGFILE}
-        echo "Now to create the incremental backup." | tee -a ${LOGFILE}
+        logit "############"
+        logit "Now to create the incremental backup."
         tar -czf ${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz -T ${FILES2BU} >/dev/null 2>&1
         if [[ -f "${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz" ]]; then
-            echo "Incremental backup complete." | tee -a ${LOGFILE}
-            echo "Incremental backup is located at:" | tee -a ${LOGFILE} 
-            echo "${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz" | tee -a ${LOGFILE}
+            logit "Incremental backup complete."
+            logit "Incremental backup is located at:"
+            logit "${DESTINATION}/incremental_backup-$(date +%Y%m%d).tar.gz"
         else
-            echo "Check backup as file was not found." | tee -a ${LOGFILE}
+            logit "Check backup as file was not found."
         fi
     else
-        echo "############" | tee -a ${LOGFILE}
-        echo "Now to create the full backup." | tee -a ${LOGFILE}
+        logit "############"
+        logit "Now to create the full backup."
         tar -czvf ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz ${USERBU}
         if [[ -f "${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz" ]]; then
-            echo "Full backup complete." | tee -a ${LOGFILE}
-            echo "Full backup is located at ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz" | tee -a ${LOGFILE}
+            logit "Full backup complete."
+            logit "Full backup is located at ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz"
         else
-            echo "Check backup as file was not found." | tee -a ${LOGFILE}
+            logit "Check backup as file was not found."
         fi
     fi
 }
