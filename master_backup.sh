@@ -56,7 +56,7 @@ scriptstart(){
 # A full backup is moved to a safe location offsite once a month.
 purgeoldbackup(){
     logit "Purge older backups. Log file will also contain the names of deleted files."
-    find ${DESTINATION} -mtime +21 -type f -print -delete | tee -a ${LOGFILE}
+    find ${DESTINATION} -mtime +31 -type f -print -delete | tee -a ${LOGFILE}
     logit "############"
 }
 
@@ -107,7 +107,7 @@ create_archive(){
     else
         logit "############"
         logit "Now to create the full backup."
-        tar -czvf ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz ${USERBU}
+        tar -czvf ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz ${USERBU} >/dev/null 2>&1
         if [[ -f "${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz" ]]; then
             logit "Full backup complete."
             logit "Full backup is located at ${DESTINATION}/full_backup-$(date +%Y%m%d).tar.gz"
