@@ -31,8 +31,8 @@ ticker_soup = BeautifulSoup(ticker_page.content, 'html.parser')
 #Find the price using the div id for last sale price
 ticker_price = ticker_soup.find_all(id="qwidget_lastsale")[0].get_text()
 
-#Print the price
-print(now + ':', ticker, 'last traded at', ticker_price + '.')
+#Print the date, stock ticker and price for the user
+print(f'{now}: {ticker} last traded at {ticker_price}.')
 
 #Send data to log for future use
 with open('ticker_logs.txt', mode='a') as file:
