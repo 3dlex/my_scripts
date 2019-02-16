@@ -18,7 +18,7 @@ import datetime
 now = datetime.datetime.today().strftime('%Y-%m-%d')
 
 #Ask user for stock ticker
-ticker = input("Enter your stock ticker. Example: AMZN, MSFT, AAPL. ")
+ticker = input("Enter your stock ticker. Example: AMZN, MSFT, AAPL: ")
 
 base_url = 'https://www.nasdaq.com/symbol/'
 url = ''.join([base_url, ticker])
