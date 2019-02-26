@@ -12,7 +12,7 @@ import requests
 def NewsFromABC():
     
     # ABC news api base link
-    base_url = "https://newsapi.org/v2/top-headlines?sources=abc-news&apiKey="
+    base_url = "https://newsapi.org/v2/top-headlines?sources=google-news&apiKey="
     # insert your api key https://newsapi.org/register
     api_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     #Combine base url and api key to form news url
