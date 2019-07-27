@@ -23,7 +23,7 @@ LOGFILE="/var/log/mybackup.log"
 USERBU="/home/matthew"
 
 #Change destination to a location avaiable to you.
-DESTINATION="/mnt/matthew/backup"
+DESTINATION="/media/windowsshare/backup"
 
 #File list used by incremental backups
 FILES2BU="/tmp/files2bu"
@@ -56,7 +56,7 @@ scriptstart(){
 # A full backup is moved to a safe location offsite once a month.
 purgeoldbackup(){
     logit "Purge older backups. Log file will also contain the names of deleted files."
-    find ${DESTINATION} -mtime +31 -type f -print -delete | tee -a ${LOGFILE}
+    find ${DESTINATION} -mtime +14 -type f -print -delete | tee -a ${LOGFILE}
     logit "############"
 }
 
