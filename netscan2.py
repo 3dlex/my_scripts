@@ -38,11 +38,11 @@ for i in range(1,255, 1):
             if mac.upper() in known_lines:
                 log_file.write("Match for %s with IP %s\n" % (mac.upper(), IP))
             else:
-                print 'No match for %s' % mac
+                log_file.write("No match for %s with IP %s\n" % (mac.upper(), IP))
                 resp = requests.post('https://textbelt.com/text', {
                     'phone': '1234567890',
                     'message': 'Unknown MAC address found on network.',
-                    'key': 'no key for you',
+                    'key': 'No key for you',
                     })
                 print(resp.json())
         except:
